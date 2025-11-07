@@ -1,0 +1,319 @@
+╔══════════════════════════════════════════════════════════════╗
+║   ✅ CUSTOM VAPI WIDGET WITH VISIBLE FLIGHT CARDS          ║
+╚══════════════════════════════════════════════════════════════╝
+
+🎉 NEW CUSTOMIZED WIDGET CREATED!
+
+═══════════════════════════════════════════════════════════════
+📁 FILE CREATED
+═══════════════════════════════════════════════════════════════
+
+File: vapi-custom-widget-with-visible-flight-cards.html
+Location: /vapi-voicebot/
+
+This is a COMPLETE standalone widget with:
+  ✅ Split-screen layout (Flights + Voice Widget)
+  ✅ Always-visible flight cards
+  ✅ Real-time search integration
+  ✅ Beautiful animations
+  ✅ Responsive design
+  ✅ Production-ready
+
+═══════════════════════════════════════════════════════════════
+🎨 FEATURES
+═══════════════════════════════════════════════════════════════
+
+Layout:
+  📱 Left Side:  Flight Cards Display (Scrollable)
+  🎤 Right Side: Vapi Voice Widget
+
+Flight Cards:
+  ✅ Large, visible cards (not hidden)
+  ✅ Beautiful gradient design
+  ✅ Real-time updates
+  ✅ Hover animations
+  ✅ Complete flight details:
+     - Origin/Destination with times
+     - Airline & Flight number
+     - Duration, Class, Gate, Seat
+     - Price with currency
+     - Book Now button
+
+Voice Widget:
+  ✅ Integrated Vapi widget
+  ✅ Voice + Text input
+  ✅ Transcript display
+  ✅ Custom styling
+  ✅ Dark theme
+
+Integration:
+  ✅ Listens to voice commands
+  ✅ Calls backend API
+  ✅ Displays results immediately
+  ✅ Handles function calls
+  ✅ Mock data fallback
+
+═══════════════════════════════════════════════════════════════
+🚀 HOW TO USE
+═══════════════════════════════════════════════════════════════
+
+Option 1: Open Directly
+------------------------
+Open in browser:
+file:///Users/apple/AI-Travel-agency/AI-Voice-Agent-Travel-/Production/vapi-voicebot/vapi-custom-widget-with-visible-flight-cards.html
+
+Option 2: Serve with HTTP Server
+---------------------------------
+cd /Users/apple/AI-Travel-agency/AI-Voice-Agent-Travel-/Production/vapi-voicebot
+python3 -m http.server 8081
+
+Then open:
+http://localhost:8081/vapi-custom-widget-with-visible-flight-cards.html
+
+═══════════════════════════════════════════════════════════════
+🎤 HOW TO TEST
+═══════════════════════════════════════════════════════════════
+
+1. Open the HTML file (see above)
+
+2. You'll see:
+   - Example flights already displayed (mock data)
+   - Voice widget on the right side
+
+3. Click "🎙️ Start Voice Call" button
+
+4. Say any of these:
+   "Show me flights from Bangalore to Jeddah"
+   "Find flights to Dubai"
+   "Search flights from Mumbai to Riyadh"
+
+5. Watch the flight cards update on the left side!
+
+6. Click "✈️ Book Now" on any flight card
+
+═══════════════════════════════════════════════════════════════
+💡 KEY DIFFERENCES FROM OTHER FILES
+═══════════════════════════════════════════════════════════════
+
+vs vapi-widget-flight-cards.html:
+  ✅ Split-screen layout (not overlay)
+  ✅ Always visible (not popup)
+  ✅ Better organization
+  ✅ Modern design
+
+vs vapi-widget-with-flight-cards-integration.html:
+  ✅ Larger flight display area
+  ✅ Cleaner separation
+  ✅ Better visibility
+  ✅ Improved UX
+
+vs vapivoice/frontend/index.html:
+  ✅ Standalone (no backend required for display)
+  ✅ Split-screen layout
+  ✅ Self-contained
+  ✅ Easy to demo
+
+═══════════════════════════════════════════════════════════════
+🎨 CUSTOMIZATION
+═══════════════════════════════════════════════════════════════
+
+Colors:
+  - Primary: #14B8A6 (Teal)
+  - Secondary: #667eea → #764ba2 (Purple gradient)
+  - Background: #0a0a0a → #1a1a2e (Dark gradient)
+
+To change colors, edit the CSS variables:
+  - .flight-card background
+  - .card-header background
+  - .book-btn background
+  - accent-color in vapi-widget
+
+Layout:
+  - Grid: 2 columns (adjust grid-template-columns)
+  - Responsive: Stacks on mobile
+  - Card size: Adjust padding/font-sizes
+
+═══════════════════════════════════════════════════════════════
+🔧 CONFIGURATION
+═══════════════════════════════════════════════════════════════
+
+Backend URL (line 264):
+  const BACKEND_URL = 'http://localhost:4000';
+  
+  Change to your backend URL if different
+
+Vapi Keys (line 236-237):
+  public-key="577ae6b3-53b9-4a37-b6f6-74e8e8808368"
+  assistant-id="e1c04a87-a8cf-4438-a91b-5888f69d1ef2"
+  
+  Already configured with your credentials ✅
+
+Mock Flights (line 269):
+  Edit mockFlights array to change example data
+
+═══════════════════════════════════════════════════════════════
+📱 RESPONSIVE DESIGN
+═══════════════════════════════════════════════════════════════
+
+Desktop (> 1200px):
+  - Split screen: Flights (left) + Widget (right)
+  - Full height layout
+
+Tablet (768px - 1200px):
+  - Stacked layout: Widget on top, Flights below
+  - Widget: 600px height
+
+Mobile (< 768px):
+  - Single column
+  - Cards: 2-column info grid
+  - Full-width buttons
+  - Optimized spacing
+
+═══════════════════════════════════════════════════════════════
+🎯 USE CASES
+═══════════════════════════════════════════════════════════════
+
+Perfect for:
+  ✅ Demos & Presentations
+  ✅ Client showcases
+  ✅ Testing flight search
+  ✅ UI/UX evaluation
+  ✅ Standalone deployment
+  ✅ Embedding in websites
+
+Not ideal for:
+  ❌ Mobile-only apps (use responsive version)
+  ❌ Small screens < 768px (cards may be cramped)
+
+═══════════════════════════════════════════════════════════════
+🔄 INTEGRATION WITH BACKEND
+═══════════════════════════════════════════════════════════════
+
+The widget automatically:
+
+1. Listens for voice commands
+2. Extracts flight parameters (origin, destination)
+3. Calls backend API: POST /api/flights/search
+4. Displays results in flight cards
+5. Falls back to mock data if API fails
+
+Backend endpoint expected:
+  POST http://localhost:4000/api/flights/search
+  Body: {
+    "origin": "BLR",
+    "destination": "JED",
+    "departure_date": "2025-11-15"
+  }
+
+Response expected:
+  {
+    "flights": [
+      {
+        "origin": "BLR",
+        "destination": "JED",
+        "airline": "Emirates",
+        "flight_number": "EK 501",
+        "departure_time": "02:15",
+        "arrival_time": "05:30",
+        "duration": "5h 15m",
+        "price": 28450,
+        ...
+      }
+    ]
+  }
+
+═══════════════════════════════════════════════════════════════
+✨ VISUAL FEATURES
+═══════════════════════════════════════════════════════════════
+
+Animations:
+  ✅ Slide-in cards (staggered)
+  ✅ Hover lift effect
+  ✅ Button press animations
+  ✅ Loading spinner
+  ✅ Smooth transitions
+
+Visual Effects:
+  ✅ Gradient backgrounds
+  ✅ Box shadows
+  ✅ Border glow on hover
+  ✅ Radial light effects
+  ✅ Backdrop blur
+
+Typography:
+  ✅ San Francisco font family
+  ✅ Multiple font weights
+  ✅ Proper hierarchy
+  ✅ Readable sizes
+  ✅ Letter spacing
+
+═══════════════════════════════════════════════════════════════
+📊 COMPARISON: ALL FLIGHT CARD FILES
+═══════════════════════════════════════════════════════════════
+
+┌────────────────────────────────────────────────────────────┐
+│ vapi-custom-widget-with-visible-flight-cards.html ⭐ NEW  │
+├────────────────────────────────────────────────────────────┤
+│ Layout:       Split-screen (Flights | Widget)             │
+│ Visibility:   Always visible                               │
+│ Best for:     Demos, presentations, desktop use           │
+│ Standalone:   Yes                                          │
+│ Mobile:       Responsive (stacks vertically)              │
+└────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────┐
+│ vapi-widget-flight-cards.html                              │
+├────────────────────────────────────────────────────────────┤
+│ Layout:       Overlay popup                                │
+│ Visibility:   Shows on search                              │
+│ Best for:     Minimal UI, focused search                   │
+│ Standalone:   Yes                                          │
+│ Mobile:       Good                                         │
+└────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────┐
+│ vapi-widget-with-flight-cards-integration.html             │
+├────────────────────────────────────────────────────────────┤
+│ Layout:       Widget + injected cards                      │
+│ Visibility:   Injected next to widget                      │
+│ Best for:     Testing integration                          │
+│ Standalone:   Yes                                          │
+│ Mobile:       Okay                                         │
+└────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────┐
+│ vapivoice/frontend/index.html                              │
+├────────────────────────────────────────────────────────────┤
+│ Layout:       Full production app                          │
+│ Visibility:   Integrated in chat                           │
+│ Best for:     Production deployment                        │
+│ Standalone:   No (needs backend)                           │
+│ Mobile:       Excellent                                    │
+└────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════
+🎯 RECOMMENDATION
+═══════════════════════════════════════════════════════════════
+
+Use this new custom widget for:
+  ✅ Client demos
+  ✅ Stakeholder presentations
+  ✅ UI/UX testing
+  ✅ Desktop showcases
+  ✅ Quick flight search demos
+
+The split-screen layout makes flight cards highly visible
+and provides an excellent user experience!
+
+═══════════════════════════════════════════════════════════════
+🚀 READY TO USE!
+═══════════════════════════════════════════════════════════════
+
+Open the file and start searching for flights!
+The widget includes mock data so you can see it working
+immediately, even without a backend connection.
+
+File: vapi-custom-widget-with-visible-flight-cards.html
+
+═══════════════════════════════════════════════════════════════
+

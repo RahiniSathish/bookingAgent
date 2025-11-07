@@ -1,0 +1,97 @@
+═══════════════════════════════════════════════════════════════
+🎙️  LIVEKIT VOICE AGENT - QUICK START
+═══════════════════════════════════════════════════════════════
+
+✅ WHAT'S READY:
+- Complete LiveKit agent code
+- Alex system prompt integrated
+- Flight search function (MCP Bright Data)
+- All credentials configured (except Deepgram)
+
+⚠️  WHAT YOU NEED:
+- Deepgram API key for Speech-to-Text
+
+═══════════════════════════════════════════════════════════════
+🚀 START IN 3 STEPS
+═══════════════════════════════════════════════════════════════
+
+STEP 1: Get Deepgram API Key
+----------------------------
+Go to: https://console.deepgram.com/signup
+Sign up → Get API key → Copy it
+
+Edit .env file:
+nano .env
+
+Find: DEEPGRAM_API_KEY=your_deepgram_key_here
+Replace with: DEEPGRAM_API_KEY=your_actual_key
+
+Save: Ctrl+X, Y, Enter
+
+
+STEP 2: Install Dependencies
+----------------------------
+cd /Users/apple/AI-Travel-agency/AI-Voice-Agent-Travel-/Production/vapi-voicebot
+source venv/bin/activate
+pip install livekit livekit-agents livekit-plugins-deepgram livekit-plugins-openai livekit-plugins-silero
+
+
+STEP 3: Start Agent
+----------------------------
+./start_livekit_agent.sh
+
+OR
+
+python livekit_voice_agent_complete.py
+
+
+═══════════════════════════════════════════════════════════════
+🎯 WHAT HAPPENS
+═══════════════════════════════════════════════════════════════
+
+When agent starts:
+✅ Connects to LiveKit cloud
+✅ Waits for users to join rooms
+✅ Automatically joins when user connects
+✅ Uses Alex personality
+✅ Searches real flights via MCP
+✅ Never stops talking!
+
+
+═══════════════════════════════════════════════════════════════
+🧪 TEST IT
+═══════════════════════════════════════════════════════════════
+
+Option 1: Your Frontend Widget
+Update widget to connect to LiveKit room
+
+Option 2: LiveKit CLI
+npm install -g livekit-cli
+livekit-cli join-room \
+  --url wss://aiinterviewprod-anr5bvh0.livekit.cloud \
+  --api-key APIiwNSMd2Nsxvq \
+  --api-secret KWkVh4Z01q4Sbx9xJegB1fE7iyGijslBNCvogi1Igpb \
+  --room test-room
+
+
+═══════════════════════════════════════════════════════════════
+📁 FILES CREATED
+═══════════════════════════════════════════════════════════════
+
+livekit_voice_agent_complete.py    - Main agent code
+start_livekit_agent.sh             - Start script
+START_LIVEKIT_COMPLETE.md          - Full documentation
+LIVEKIT_AGENT_COMPLETE_SUMMARY.md  - Complete summary
+LIVEKIT_QUICK_START.txt            - This file
+
+
+═══════════════════════════════════════════════════════════════
+✅ READY!
+═══════════════════════════════════════════════════════════════
+
+Just add Deepgram key and run:
+./start_livekit_agent.sh
+
+Your AI travel agent Alex will be LIVE! 🚀
+
+

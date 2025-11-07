@@ -1,0 +1,135 @@
+═══════════════════════════════════════════════════════════════════════════════
+✅ BOOKING FLOW - QUICK START
+═══════════════════════════════════════════════════════════════════════════════
+
+🎯 WHAT'S NEW
+─────────────────────────────────────────────────────────────────────────
+✅ AI now collects ALL booking details
+✅ Step-by-step sophisticated questions
+✅ Automatic backend integration
+✅ Email confirmation sent
+✅ Booking reference generated
+✅ Full system prompt compliance
+
+═══════════════════════════════════════════════════════════════════════════════
+📊 BOOKING FLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+1. User: "Show flights from Bangalore to Jeddah"
+2. AI: [Searches, shows 5 cards]
+3. User: "Book the first one"
+4. AI: "How many passengers?" → 2
+5. AI: "Window or aisle?" → Window
+6. AI: "Meal preference?" → Vegetarian
+7. AI: "One-way or round?" → Round trip, Dec 25
+8. AI: "Email?" → john@example.com
+9. AI: "Name?" → John Smith
+10. AI: "Phone?" → 9876543210
+11. AI: [Shows summary]
+12. User: "Yes, confirm"
+13. AI: "Booking confirmed! Reference: ATTAR123456"
+14. User gets email confirmation
+
+═══════════════════════════════════════════════════════════════════════════════
+💾 DATA COLLECTED
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ Flight number
+✓ Number of passengers
+✓ Seat preference (window/aisle)
+✓ Meal preference (veg/non-veg/vegan)
+✓ Trip type (one-way/round-trip)
+✓ Return date (if round-trip)
+✓ Email address
+✓ Passenger name
+✓ Phone number
+
+═══════════════════════════════════════════════════════════════════════════════
+🧪 TEST IT NOW
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Open: http://localhost:3003/
+2. Click floating button
+3. Click "Start"
+4. Say: "Show flights from Bangalore to Jeddah"
+5. Say: "Book the first one"
+6. Answer each question (8 steps total)
+7. Say: "Yes" to confirm
+8. Watch confirmation appear + email sent
+
+═══════════════════════════════════════════════════════════════════════════════
+🔧 QUESTIONS (In Order)
+═══════════════════════════════════════════════════════════════════════════════
+
+Q1: "How many passengers will be traveling?"
+Q2: "Would you prefer window or aisle seats?"
+Q3: "Vegetarian, non-vegetarian, or vegan meals?"
+Q4: "One-way or round trip?"
+Q5: "Return date?" (if round trip)
+Q6: "Email address for confirmation?"
+Q7: "Your name please?"
+Q8: "Phone number for contact?"
+Q9: "Shall I proceed?" [Summary shown]
+
+═══════════════════════════════════════════════════════════════════════════════
+✅ FEATURES
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ Smart questions - ONE at a time
+✅ Context aware - remembers origin/destination
+✅ Auto extracts numbers - "2" from "2 passengers"
+✅ Validates input - repeats if doesn't understand
+✅ Shows summary - before final booking
+✅ Backend integration - sends to /create-booking
+✅ Email sent - confirmation to customer
+✅ Reference generated - ATTAR123456 format
+
+═══════════════════════════════════════════════════════════════════════════════
+📧 EMAIL CONFIRMATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Sent to customer email with:
+✓ Booking reference
+✓ Flight details
+✓ Passenger info
+✓ Seat preference
+✓ Meal preference
+✓ Payment instructions
+✓ Support contact
+
+═══════════════════════════════════════════════════════════════════════════════
+🔌 BACKEND
+═══════════════════════════════════════════════════════════════════════════════
+
+Endpoint: POST /create-booking
+
+Sends all collected data:
+- customer_email
+- passenger_name
+- phone
+- departure_location
+- destination
+- flight_number
+- num_travelers
+- seat_preference
+- meal_preference
+- round_trip
+- return_date
+
+Backend responds with:
+- booking_id
+- confirmation_ref
+- email_sent status
+- success message
+
+═══════════════════════════════════════════════════════════════════════════════
+🎉 COMPLETE BOOKING FLOW WORKING!
+═══════════════════════════════════════════════════════════════════════════════
+
+User Flow:
+Flight Search → View Cards → Book → Answer Questions → Confirm → Get Ref → Email
+
+All handled by Alex following the system prompt! ✨
+
+═══════════════════════════════════════════════════════════════════════════════
+

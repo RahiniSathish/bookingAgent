@@ -1,0 +1,222 @@
+╔══════════════════════════════════════════════════════════════╗
+║     ❌ VAPI NOT CALLING BACKEND - WEBHOOK ISSUE            ║
+║              CONFIGURATION FIX REQUIRED                      ║
+╚══════════════════════════════════════════════════════════════╝
+
+🔍 PROBLEM IDENTIFIED:
+
+Your conversation shows:
+  "I'm currently facing difficulties retrieving real-time flight options"
+  
+This means: Vapi is NOT sending requests to your backend!
+
+Root Cause:
+  ❌ Vapi doesn't know where to send function calls
+  ❌ Webhook URL not configured in Vapi dashboard
+  ❌ Or webhook URL is incorrect
+
+═══════════════════════════════════════════════════════════════
+✅ YOUR BACKEND IS WORKING!
+═══════════════════════════════════════════════════════════════
+
+Backend Status:
+  ✅ Server running on port 4000
+  ✅ Webhook endpoint exists: /webhooks/vapi
+  ✅ Mock flights database ready
+  ✅ Function handling configured
+
+The backend is ready - Vapi just needs to be told to use it!
+
+═══════════════════════════════════════════════════════════════
+🔧 SOLUTION: CONFIGURE VAPI WEBHOOK
+═══════════════════════════════════════════════════════════════
+
+You need to expose your backend and configure Vapi to call it.
+
+Step 1: Expose Backend with ngrok
+----------------------------------
+
+Your backend is on localhost:4000, but Vapi needs a public URL.
+
+1. Install ngrok (if not installed):
+   brew install ngrok
+
+2. Start ngrok:
+   ngrok http 4000
+
+3. You'll get a URL like:
+   https://abc123.ngrok.io
+
+4. Keep this terminal open!
+
+Step 2: Configure Vapi Dashboard
+---------------------------------
+
+1. Go to: https://dashboard.vapi.ai
+
+2. Find your assistant:
+   Assistant ID: e1c04a87-a8cf-4438-a91b-5888f69d1ef2
+   Name: Alex (Attar Travel)
+
+3. Go to: Functions/Tools section
+
+4. Add or update the search_flights function:
+
+   Function Name: search_flights
+   
+   Server URL: https://your-ngrok-url.ngrok.io/webhooks/vapi
+   (Replace with your actual ngrok URL)
+   
+   Function Definition:
+   {
+     "type": "function",
+     "function": {
+       "name": "search_flights",
+       "description": "Search for available flights between two cities",
+       "parameters": {
+         "type": "object",
+         "properties": {
+           "origin": {
+             "type": "string",
+             "description": "Origin city (e.g., Bangalore, Mumbai)"
+           },
+           "destination": {
+             "type": "string",
+             "description": "Destination city (e.g., Jeddah, Dubai)"
+           },
+           "departure_date": {
+             "type": "string",
+             "description": "Departure date in YYYY-MM-DD format"
+           },
+           "passengers": {
+             "type": "integer",
+             "description": "Number of passengers",
+             "default": 1
+           },
+           "cabin_class": {
+             "type": "string",
+             "enum": ["economy", "business", "first"],
+             "default": "economy"
+           }
+         },
+         "required": ["origin", "destination", "departure_date"]
+       }
+     }
+   }
+
+5. Save changes
+
+═══════════════════════════════════════════════════════════════
+🧪 VERIFY THE SETUP
+═══════════════════════════════════════════════════════════════
+
+After configuration:
+
+1. Check ngrok is running:
+   - Terminal shows: Forwarding https://xxx.ngrok.io -> localhost:4000
+
+2. Test webhook directly:
+   curl -X POST https://your-ngrok-url.ngrok.io/webhooks/vapi \
+     -H "Content-Type: application/json" \
+     -d '{
+       "type": "function-call",
+       "functionCall": {
+         "name": "search_flights",
+         "parameters": {
+           "origin": "Bangalore",
+           "destination": "Jeddah",
+           "departure_date": "2025-12-15"
+         }
+       }
+     }'
+
+3. Test with Vapi:
+   - Open your widget
+   - Say: "Show me flights from Bangalore to Jeddah"
+   - Flights should appear!
+
+═══════════════════════════════════════════════════════════════
+📊 TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════
+
+If still not working:
+
+Issue 1: ngrok URL changed
+  → ngrok URLs change each time you restart
+  → Update Vapi dashboard with new URL
+  → Or use ngrok paid plan for static URLs
+
+Issue 2: Firewall blocking
+  → Check if backend port 4000 is accessible
+  → Check ngrok logs for requests
+
+Issue 3: Function not configured
+  → Verify function exists in Vapi dashboard
+  → Check Server URL is correct
+  → Ensure function name is exactly "search_flights"
+
+Issue 4: Backend not receiving requests
+  → Check backend logs: tail -f vapivoice/logs/backend.log
+  → Look for: "Vapi webhook received"
+  → Check ngrok dashboard: http://127.0.0.1:4040
+
+═══════════════════════════════════════════════════════════════
+🚀 QUICK START COMMANDS
+═══════════════════════════════════════════════════════════════
+
+Terminal 1 (Backend - Already Running):
+  cd vapivoice
+  source venv/bin/activate
+  python backend/server.py
+
+Terminal 2 (ngrok - Start This Now):
+  ngrok http 4000
+
+Terminal 3 (Monitor Logs):
+  tail -f vapivoice/logs/backend.log
+
+Then:
+  1. Copy ngrok URL from Terminal 2
+  2. Add to Vapi dashboard
+  3. Test your widget!
+
+═══════════════════════════════════════════════════════════════
+💡 ALTERNATIVE: LOCAL TESTING
+═══════════════════════════════════════════════════════════════
+
+If you can't use ngrok right now, use the custom widget:
+
+1. Open: http://localhost:8082/vapi-voicebot/custom-vapi-widget-with-flight-injection.html
+
+2. This widget calls backend directly (no ngrok needed)
+
+3. Flight cards will appear when you ask
+
+This bypasses Vapi's webhook system for now!
+
+═══════════════════════════════════════════════════════════════
+🎯 SUMMARY
+═══════════════════════════════════════════════════════════════
+
+Problem:     Vapi not calling your backend
+Cause:       No webhook URL configured
+Solution:    Expose backend with ngrok + Configure Vapi
+Alternative: Use custom widget (localhost only)
+
+Your Backend:  ✅ Working
+Your Frontend: ✅ Working
+Missing:       🔧 Vapi → Backend connection
+
+Fix the webhook, and flights will appear automatically! 🚀
+
+═══════════════════════════════════════════════════════════════
+📝 CONFIGURATION FILE REFERENCE
+═══════════════════════════════════════════════════════════════
+
+See also:
+  - VAPI_FUNCTION_CONFIG.json (function definition)
+  - VAPI_SYSTEM_PROMPT_FOR_CARDS.txt (system prompt)
+  - Backend webhook: vapivoice/backend/server.py line 664
+
+═══════════════════════════════════════════════════════════════
+

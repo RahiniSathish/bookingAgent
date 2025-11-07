@@ -1,0 +1,93 @@
+════════════════════════════════════════════════════════════════════════════════
+🎯 QUICK SUMMARY - FIX FLIGHT CARDS NOW
+════════════════════════════════════════════════════════════════════════════════
+
+WHAT'S WRONG:
+✗ AI suggesting websites (MakeMyTrip, Google Flights, Skyscanner)
+✗ Cards panel on right is empty
+✗ search_flights NOT being called
+
+WHY IT HAPPENED:
+→ Old system prompt still in Vapi Dashboard
+→ New prompt files created but not copied to Vapi yet
+
+════════════════════════════════════════════════════════════════════════════════
+✅ SOLUTION IN 2 MINUTES
+════════════════════════════════════════════════════════════════════════════════
+
+Step 1: Copy New System Prompt
+────────────────────────────────
+File: VAPI_SYSTEM_PROMPT_ULTIMATE.txt
+
+This file is in your project folder.
+Open it and copy ALL the text.
+
+Step 2: Paste into Vapi Dashboard
+────────────────────────────────
+Go: https://dashboard.vapi.ai/assistants
+Click: Your assistant (e1c04a87-a8cf-4438-a91b-5888f69d1ef2)
+Tab: Model
+Field: System Prompt
+Action: DELETE old text → PASTE new text → SAVE
+
+Wait 10 seconds.
+
+Step 3: Test
+────────────
+URL: http://localhost:3001/vapi-with-visual-cards.html
+Say: "Show flights from Bangalore to Jeddah"
+Result: Beautiful cards appear on right! ✅
+
+════════════════════════════════════════════════════════════════════════════════
+📁 NEW FILES CREATED FOR YOU
+════════════════════════════════════════════════════════════════════════════════
+
+1️⃣ vapi-with-visual-cards.html
+   → Beautiful flight card widget
+   → Ready to use at localhost:3001
+   → Left: Vapi widget | Right: Flight cards panel
+
+2️⃣ VAPI_SYSTEM_PROMPT_ULTIMATE.txt
+   → NEW ultra-strict system prompt
+   → Forces search_flights call
+   → Forbids all website suggestions
+   → Ready to copy to Vapi Dashboard
+
+3️⃣ FINAL_FIX_INSTRUCTIONS.md
+   → Detailed fix steps
+   → Complete checklist
+   → What to expect
+
+════════════════════════════════════════════════════════════════════════════════
+🎉 EXPECTED RESULT AFTER FIX
+════════════════════════════════════════════════════════════════════════════════
+
+Before (Current - Wrong):
+└─ AI: "MakeMyTrip, Google Flights, Skyscanner..."
+└─ Cards panel: Empty
+└─ No function calls
+
+After (After Fix - Correct):
+└─ AI: "I found 6 flights! Check the cards on your right!"
+└─ Cards panel: 6 beautiful flight cards appear
+└─ Beautiful cards with times, prices, book buttons
+└─ NO website links
+└─ search_flights function called successfully
+
+════════════════════════════════════════════════════════════════════════════════
+⚡ IMMEDIATE ACTION
+════════════════════════════════════════════════════════════════════════════════
+
+1. Open: VAPI_SYSTEM_PROMPT_ULTIMATE.txt
+2. Copy ALL text
+3. Go to Vapi Dashboard
+4. Paste into System Prompt field
+5. Save
+6. Wait 10 seconds
+7. Refresh: http://localhost:3001/vapi-with-visual-cards.html
+8. Test!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🚀 READY? Start with step 1 above!
+

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attar Travel - AI Voice Assistant (Clean)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 60px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #14B8A6;
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            color: #6366f1;
+            font-size: 1.3em;
+            margin-bottom: 40px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        /* Flight Cards Overlay */
+        #flightCardsOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            padding: 20px;
+        }
+
+        #flightCardsOverlay.active {
+            display: flex;
+        }
+
+        #flightCardsContainer {
+            background: white;
+            border-radius: 24px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .overlay-header {
+            background: linear-gradient(135deg, #14B8A6 0%, #0891b2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 24px 24px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #flightCardsList {
+            padding: 24px;
+        }
+
+        .boarding-pass {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .bp-hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #e0e0e0;
+        }
+
+        .bp-city {
+            text-align: center;
+        }
+
+        .bp-city-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .bp-city-code {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .bp-time {
+            font-size: 16px;
+            color: #14B8A6;
+            font-weight: 600;
+        }
+
+        .bp-plane {
+            font-size: 28px;
+            color: #14B8A6;
+        }
+
+        .bp-details {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #e0e0e0;
+        }
+
+        .bp-details span {
+            display: block;
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .bp-details strong {
+            font-size: 15px;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .bp-price-section {
+            background: linear-gradient(135deg, #14B8A6 0%, #0891b2 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bp-price {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .book-btn {
+            background: white;
+            color: #14B8A6;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✈️ Attar Travel Assistant</h1>
+        <p class="subtitle">AI-powered travel companion - Voice & Text</p>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🎤</div>
+                <div class="feature-title">Voice Booking</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">✈️</div>
+                <div class="feature-title">Real-time Flights</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Flight Cards</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flight Cards Overlay -->
+    <div id="flightCardsOverlay">
+        <div id="flightCardsContainer">
+            <div class="overlay-header">
+                <h2>✈️ Available Flights</h2>
+                <button class="close-btn" onclick="closeFlightOverlay()">✕ Close</button>
+            </div>
+            <div id="flightCardsList"></div>
+        </div>
+    </div>
+
+    <!-- VOICE-ONLY Vapi Widget -->
+    <vapi-widget
+        public-key="577ae6b3-53b9-4a37-b6f6-74e8e8808368"
+        assistant-id="e1c04a87-a8cf-4438-a91b-5888f69d1ef2"
+        mode="voice"
+        theme="dark"
+        accent-color="#14B8A6"
+        position="bottom-right"
+        title="🎤 VOICE ASSISTANT"
+        show-transcript="true"
+        enable-chat="false"
+    ></vapi-widget>
+
+    <!-- Vapi Widget Script -->
+    <script src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js" async type="text/javascript"></script>
+
+    <script>
+        const BACKEND_URL = 'http://localhost:4000';
+
+        // Simplified message handler
+        window.addEventListener('message', async (event) => {
+            if (!event.data) return;
+            
+            console.log('Message:', event.data.type || event.data.action);
+
+            // Handle flight search
+            if (event.data.action === 'app-message') {
+                try {
+                    const payload = JSON.parse(event.data.data);
+                    if (payload.tool === 'search_flights' || payload.functionCall?.name === 'search_flights') {
+                        const result = payload.functionCall?.result || payload.result || payload;
+                        const flights = result.flights || payload.flights || [];
+                        if (flights.length > 0) {
+                            displayFlightCards(flights);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Parse error:', e);
+                }
+            }
+
+            // Auto-detect flight queries
+            if (event.data.type === 'vapi-message' && event.data.message?.role === 'user') {
+                const text = event.data.message.transcript || '';
+                if (/flight|show|find|search|bangalore|jeddah|mumbai|dubai/i.test(text)) {
+                    console.log('Flight query detected:', text);
+                    await fetchAndShowFlights(text);
+                }
+            }
+        });
+
+        async function fetchAndShowFlights(query) {
+            const flightInfo = extractFlightInfo(query);
+            if (!flightInfo.origin || !flightInfo.destination) return;
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/search-flights`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        origin: flightInfo.origin,
+                        destination: flightInfo.destination,
+                        departure_date: flightInfo.date || "2026-01-15",
+                        passengers: 1,
+                        cabin_class: "economy"
+                    })
+                });
+
+                const data = await response.json();
+                if (data.flights?.length > 0) {
+                    displayFlightCards(data.flights);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        }
+
+        function extractFlightInfo(query) {
+            query = query.toLowerCase();
+            const cityMappings = {
+                'bangalore': 'Bangalore', 'bengaluru': 'Bangalore', 'blr': 'Bangalore',
+                'jeddah': 'Jeddah', 'jed': 'Jeddah',
+                'riyadh': 'Riyadh', 'ruh': 'Riyadh',
+                'dubai': 'Dubai', 'dxb': 'Dubai',
+                'mumbai': 'Mumbai', 'bom': 'Mumbai',
+                'delhi': 'Delhi', 'del': 'Delhi'
+            };
+            
+            let origin = null, destination = null;
+            Object.keys(cityMappings).forEach(key => {
+                if (query.includes(key)) {
+                    if (query.indexOf(key) < query.length / 2) {
+                        origin = cityMappings[key];
+                    } else {
+                        destination = cityMappings[key];
+                    }
+                }
+            });
+            
+            return { origin, destination, date: null };
+        }
+
+        function displayFlightCards(flights) {
+            const overlay = document.getElementById('flightCardsOverlay');
+            const cardsList = document.getElementById('flightCardsList');
+            
+            cardsList.innerHTML = `<div style="text-align:center;font-size:20px;font-weight:bold;margin-bottom:24px;color:#14B8A6;">Found ${flights.length} Flights</div>`;
+            
+            flights.forEach(flight => {
+                cardsList.insertAdjacentHTML('beforeend', createBoardingPassCard(flight));
+            });
+            
+            overlay.classList.add('active');
+        }
+
+        function createBoardingPassCard(flight) {
+            return `
+                <div class="boarding-pass">
+                    <div class="bp-hero">
+                        <div class="bp-city">
+                            <div class="bp-city-label">FROM</div>
+                            <div class="bp-city-code">${flight.origin || 'N/A'}</div>
+                            <div class="bp-time">${flight.departure_time || 'N/A'}</div>
+                        </div>
+                        <div class="bp-plane">✈️</div>
+                        <div class="bp-city">
+                            <div class="bp-city-label">TO</div>
+                            <div class="bp-city-code">${flight.destination || 'N/A'}</div>
+                            <div class="bp-time">${flight.arrival_time || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="bp-details">
+                        <div><span>Airline</span><strong>${flight.airline || 'N/A'}</strong></div>
+                        <div><span>Flight</span><strong>${flight.flight_number || 'N/A'}</strong></div>
+                        <div><span>Duration</span><strong>${flight.duration || 'N/A'}</strong></div>
+                        <div><span>Stops</span><strong>${flight.stops === 0 ? 'Non-stop' : flight.stops + ' stop(s)'}</strong></div>
+                    </div>
+                    <div class="bp-price-section">
+                        <div class="bp-price">₹${Math.round(flight.price || 0).toLocaleString()}</div>
+                        <button class="book-btn" onclick="alert('Booking ${flight.airline} flight...')">Book Now</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeFlightOverlay() {
+            document.getElementById('flightCardsOverlay').classList.remove('active');
+        }
+
+        document.getElementById('flightCardsOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'flightCardsOverlay') closeFlightOverlay();
+        });
+    </script>
+</body>
+</html>
+

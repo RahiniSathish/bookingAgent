@@ -1,0 +1,46 @@
+{
+  "type": "function",
+  "function": {
+    "name": "search_flights",
+    "description": "Search for available flights between two cities. Use this whenever the user asks about flights, flight options, or wants to travel from one place to another.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "type": "string",
+          "description": "Origin city or airport code (e.g., 'Bangalore', 'BLR', 'Mumbai', 'BOM')"
+        },
+        "destination": {
+          "type": "string",
+          "description": "Destination city or airport code (e.g., 'Jeddah', 'JED', 'Dubai', 'DXB')"
+        },
+        "departure_date": {
+          "type": "string",
+          "description": "Departure date in YYYY-MM-DD format"
+        },
+        "return_date": {
+          "type": "string",
+          "description": "Return date in YYYY-MM-DD format (optional for one-way trips)"
+        },
+        "passengers": {
+          "type": "integer",
+          "description": "Number of passengers",
+          "default": 1
+        },
+        "cabin_class": {
+          "type": "string",
+          "enum": ["economy", "premium_economy", "business", "first"],
+          "description": "Cabin class preference",
+          "default": "economy"
+        }
+      },
+      "required": ["origin", "destination", "departure_date"]
+    }
+  },
+  "server": {
+    "url": "http://localhost:4000/webhooks/vapi",
+    "timeoutSeconds": 30,
+    "note": "For production, replace localhost with your ngrok URL: https://your-ngrok-url.ngrok.io/webhooks/vapi"
+  }
+}
+

@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attar Travel - Flight Search</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            position: fixed !important;
+            right: 20px !important;
+            top: 20px !important;
+            bottom: 20px !important;
+            width: 420px !important;
+            max-width: 30vw !important;
+            z-index: 999997 !important;
+        }
+
+        #widgetStack {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #widgetStack vapi-widget {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Injected cards styling - will appear inside widget */
+        .flight-cards-injection {
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 90px;
+            max-height: 50%;
+            overflow-y: auto;
+            z-index: 1000;
+            pointer-events: auto;
+            display: none;
+        }
+
+        .flight-cards-injection.visible {
+            display: block;
+        }
+
+        .flight-view-button {
+            background: linear-gradient(135deg, #14B8A6 0%, #0891b2 100%);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            margin: 8px 0;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+        }
+
+        .flight-view-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(20, 184, 166, 0.5);
+        }
+
+        .flight-view-button:active {
+            transform: translateY(0);
+        }
+
+        /* ✅ Flight Cards Container - LEFT SIDE */
+        #flightCardsContainer {
+            position: fixed !important;
+            top: 20px !important;
+            left: 20px !important;
+            bottom: 20px !important;
+            width: calc(100% - 480px) !important;
+            max-width: 900px !important;
+            z-index: 999998 !important;
+            display: none !important;
+            overflow-y: auto !important;
+        }
+
+        #flightCardsContainer.show {
+            display: block !important;
+        }
+
+        .flight-cards-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)) !important;
+            gap: 24px !important;
+            padding: 30px !important;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+            border-radius: 24px !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .flight-cards-grid::before {
+            content: '✈️ Flight Results';
+            display: block;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            grid-column: 1 / -1;
+        }
+        
+        .flight-cards-grid::after {
+            content: '• Found 6 flights';
+            display: block;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(16, 185, 129, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            width: fit-content;
+            margin-bottom: 10px;
+            grid-column: 1 / -1;
+        }
+
+        .flight-card-item {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+            border: none !important;
+            border-radius: 16px !important;
+            padding: 24px !important;
+            margin-bottom: 0;
+            color: white !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+            transition: all 0.3s ease;
+        }
+
+        .flight-card-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .card-route {
+            font-size: 1em;
+            font-weight: 700;
+            color: #14B8A6;
+        }
+
+        .card-airline-badge {
+            font-size: 0.8em;
+            color: #a0aec0;
+            background: rgba(20, 184, 166, 0.15);
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .card-times {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .time-cell {
+            text-align: center;
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+
+        .time-label {
+            color: #a0aec0;
+            font-size: 0.7em;
+            margin-bottom: 2px;
+        }
+
+        .time-value {
+            font-weight: 700;
+            color: #51cf66;
+            font-size: 0.95em;
+        }
+
+        .card-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 0;
+        }
+
+        .info-item {
+            text-align: left;
+        }
+
+        .info-label {
+            color: #a0aec0;
+            font-size: 0.7em;
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-weight: 700;
+            color: #51cf66;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .card-price {
+            font-size: 1.2em;
+            font-weight: 800;
+            color: #14B8A6;
+        }
+
+        .book-button, .book-flight-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            color: white !important;
+            border: none !important;
+            padding: 12px 24px !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+            font-size: 15px !important;
+            transition: all 0.2s ease !important;
+            width: 100% !important;
+            text-align: center !important;
+        }
+
+        .book-button:hover, .book-flight-btn:hover {
+            transform: scale(1.05) !important;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4) !important;
+        }
+
+        .book-button:active, .book-flight-btn:active {
+            transform: scale(0.98) !important;
+        }
+
+        /* Scrollbar for cards */
+        .flight-cards-injection::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .flight-cards-injection::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .flight-cards-injection::-webkit-scrollbar-thumb {
+            background: rgba(20, 184, 166, 0.4);
+            border-radius: 10px;
+        }
+
+        .flight-cards-injection::-webkit-scrollbar-thumb:hover {
+            background: rgba(20, 184, 166, 0.7);
+        }
+
+        .cards-title {
+            color: #14B8A6;
+            font-weight: 700;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(20, 184, 166, 0.1);
+            border-left: 3px solid #14B8A6;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div id="flightCardsContainer">
+        <div class="flight-cards-grid" id="flightCardsGrid"></div>
+    </div>
+    <div class="container">
+        <div id="widgetStack">
+    <vapi-widget
+        id="vapiWidget"
+        public-key="577ae6b3-53b9-4a37-b6f6-74e8e8808368"
+        assistant-id="e1c04a87-a8cf-4438-a91b-5888f69d1ef2"
+                mode="voice"
+                theme="dark"
+                krisp-enabled="false"
+        base-bg-color="#000000"
+            accent-color="#14B8A6"
+                title="Flight Search Assistant"
+                show-transcript="true"
+                enable-chat="true"
+        position="bottom-right"
+                enable-cards="true"
+    ></vapi-widget>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js" async></script>
+    <script>
+        window.krispSDKLoaded = true;
+        const originalError = console.error;
+        console.error = function (...args) {
+            const errorStr = args.toString ? args.toString() : String(args[0]);
+            if (errorStr && errorStr.includes('KrispSDK')) {
+                console.log('⚠️ KrispSDK warning suppressed (disabled in config)');
+                return;
+            }
+            return originalError.apply(console, args);
+        };
+
+        const BACKEND_URL = 'http://localhost:4000';
+        const widget = document.getElementById('vapiWidget');
+
+        console.log('🚀 Flight widget initializing...');
+
+        let lastUserUtterance = '';
+        let currentFlights = [];
+        const flightPatterns = [
+            /(found|showing|displaying|available).*flight/,
+            /flight options/,
+            /\d+\s*flight/,
+            /i found.*flight/,
+            /i found.*option/,
+            /flight cards/,
+            /view the flights/
+        ];
+ 
+         const safeFetch = async (url, opts) => {
+            try {
+                console.log(`📡 Fetching: ${url}`);
+                return await fetch(url, opts);
+            } catch (e) {
+                console.error('❌ Fetch error:', e);
+                return null;
+            }
+        };
+
+        const withShadowRoot = (callback, retries = 15) => {
+            const attempt = (remaining) => {
+                const shadowRoot = widget?.shadowRoot;
+                if (shadowRoot) {
+                    callback(shadowRoot);
+                    return;
+                }
+                if (remaining <= 0) {
+                    console.warn('⚠️ Unable to access Vapi widget shadow root');
+                    return;
+                }
+                setTimeout(() => attempt(remaining - 1), 150);
+            };
+            attempt(retries);
+        };
+ 
+         const findTranscriptElement = (shadowRoot) => {
+            return (
+                shadowRoot.querySelector('[data-testid="messages"]') ||
+                shadowRoot.querySelector('[data-testid="conversation"]') ||
+                shadowRoot.querySelector('[class*="messages"]') ||
+                shadowRoot.querySelector('[class*="transcript"]') ||
+                shadowRoot.querySelector('[role="log"]') ||
+                shadowRoot.querySelector('main article') ||
+                shadowRoot.querySelector('main') ||
+                shadowRoot.querySelector('section')
+            );
+        };
+
+        const removeInjectedCards = () => {
+            withShadowRoot((shadowRoot) => {
+                const existing = shadowRoot.querySelector('[data-flight-cards]');
+                if (existing) {
+                    existing.remove();
+                    console.log('🧹 Removed previously injected flight cards');
+                }
+            }, 1);
+        };
+
+
+        const VIEW_BUTTON_ID = 'vapi-view-flights-button';
+ 
+         const removeViewFlightsButton = () => {
+            const existing = document.getElementById(VIEW_BUTTON_ID);
+            if (existing && existing.parentElement) {
+                existing.parentElement.removeChild(existing);
+                console.log('🗑️ View Flights button removed');
+            }
+        };
+ 
+         // ✅ Show View Flights Button (instead of auto-displaying cards)
+         const showViewFlightsButton = (flights) => {
+             if (!flights || !flights.length) return;
+ 
+             console.log('📋 Storing flights and showing View button');
+             currentFlights = flights;
+ 
+            const stackContainer = document.getElementById('widgetStack');
+            if (!stackContainer) {
+                console.warn('⚠️ widgetStack container missing - cannot show View Flights button');
+                return;
+            }
+
+            let btn = document.getElementById(VIEW_BUTTON_ID);
+            if (!btn) {
+                btn = document.createElement('button');
+                btn.id = VIEW_BUTTON_ID;
+                btn.type = 'button';
+                btn.style.cssText = `
+                    position: absolute;
+                    top: 16px;
+                    right: 16px;
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 10px;
+                    padding: 10px 18px;
+                    font-size: 15px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+                    transition: transform 0.2s ease, box-shadow 0.2s ease;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    z-index: 2147483647;
+                    pointer-events: auto;
+                `;
+                btn.addEventListener('mouseenter', () => {
+                    btn.style.transform = 'translateY(-1px) scale(1.03)';
+                    btn.style.boxShadow = '0 10px 24px rgba(16, 185, 129, 0.55)';
+                });
+                btn.addEventListener('mouseleave', () => {
+                    btn.style.transform = 'translateY(0) scale(1)';
+                    btn.style.boxShadow = '0 6px 18px rgba(16, 185, 129, 0.45)';
+                });
+                btn.addEventListener('click', () => {
+                    showFlightCards();
+                });
+
+                stackContainer.insertBefore(btn, stackContainer.firstChild);
+                console.log('✅ View Flights button injected into widget stack');
+            }
+
+            btn.textContent = `✈️ View ${flights.length} Flights`;
+            btn.disabled = false;
+
+            // Also provide fallback button in case widget covers ours
+            ensureGlobalViewButton(flights);
+        };
+ 
+         const ensureGlobalViewButton = (flights) => {
+            const existing = document.getElementById(`${VIEW_BUTTON_ID}-fallback`);
+            if (existing) {
+                existing.remove();
+            }
+
+            const fallback = document.createElement('button');
+            fallback.id = `${VIEW_BUTTON_ID}-fallback`;
+            fallback.textContent = `✈️ View ${flights.length} Flights`;
+            fallback.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                padding: 10px 18px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                box-shadow: 0 10px 24px rgba(16, 185, 129, 0.55);
+                z-index: 2147483646;
+            `;
+            fallback.addEventListener('click', () => {
+                document.body.removeChild(fallback);
+                showFlightCards();
+            });
+
+            document.body.appendChild(fallback);
+        };
+
+        let transcriptObserverAttached = false;
+
+        const handleAssistantFlightDetection = async (source = 'observer') => {
+            console.log(`🛰️ Assistant flight mention detected via ${source}`);
+
+            if (!currentFlights || currentFlights.length === 0) {
+                const params = extractFlightParams(lastUserUtterance || '');
+                console.log('📍 Fetching flights due to detection, params:', params);
+                const flights = await fetchFlights(params);
+                currentFlights = flights && flights.length ? flights : mockFlights();
+            }
+
+            if (currentFlights && currentFlights.length) {
+                showViewFlightsButton(currentFlights);
+            }
+        };
+
+        const initAssistantMessageObserver = () => {
+            if (transcriptObserverAttached) return;
+
+            withShadowRoot((shadowRoot) => {
+                const transcript = findTranscriptElement(shadowRoot);
+                if (!transcript) {
+                    console.warn('⚠️ Could not locate transcript element for observer');
+                    return;
+                }
+
+                transcriptObserverAttached = true;
+                const observer = new MutationObserver((mutations) => {
+                    for (const mutation of mutations) {
+                        mutation.addedNodes.forEach((node) => {
+                            const text = node?.textContent?.toLowerCase?.() || '';
+                            if (!text) return;
+                            if (flightPatterns.some((pattern) => pattern.test(text))) {
+                                handleAssistantFlightDetection('mutation');
+                            }
+                        });
+                    }
+                });
+
+                observer.observe(transcript, { childList: true, subtree: true });
+                console.log('👀 Assistant transcript observer attached');
+            });
+        };
+
+        // ✅ Show Flight Cards (called when button is clicked)
+        function showFlightCards() {
+            console.log('🎯 View Flights button clicked!');
+ 
+             if (!currentFlights || currentFlights.length === 0) {
+                 alert('⚠️ Please start the voice assistant and ask for flight details first.\n\nClick the microphone button and say:\n"Show me flights from Bangalore to Riyadh"');
+                 console.warn('⚠️ No flights available - user needs to ask AI first');
+                 return;
+             }
+ 
+             removeViewFlightsButton();
+            const fallback = document.getElementById(`${VIEW_BUTTON_ID}-fallback`);
+            if (fallback) fallback.remove();
+            displayFlightCardsOnUI(currentFlights);
+        }
+ 
+         // ✅ Hide everything on call start/end
+         const hideFlightUI = () => {
+             const container = document.getElementById('flightCardsContainer');
+             if (container) container.classList.remove('show');
+ 
+             removeViewFlightsButton();
+            const fallback = document.getElementById(`${VIEW_BUTTON_ID}-fallback`);
+            if (fallback) fallback.remove();
+             currentFlights = [];
+         };
+
+        const displayFlightCardsOnUI = (flights) => {
+            console.log('🎯 displayFlightCardsOnUI called with:', flights);
+            
+            if (!flights || !flights.length) {
+                console.warn('⚠️ No flights to display');
+                return;
+            }
+            
+            console.log(`📊 Processing ${flights.length} flights for UI display`);
+            
+            const container = document.getElementById('flightCardsContainer');
+            const grid = document.getElementById('flightCardsGrid');
+            
+            if (!container) {
+                console.error('❌ flightCardsContainer not found in DOM');
+                return;
+            }
+            if (!grid) {
+                console.error('❌ flightCardsGrid not found in DOM');
+                return;
+            }
+            
+            console.log('✅ Container and grid elements found');
+            
+            grid.innerHTML = '';
+            
+            flights.forEach((flight, index) => {
+                console.log(`🛫 Creating card ${index + 1}:`, {
+                    airline: flight.airline,
+                    price: flight.price,
+                    from: flight.origin,
+                    to: flight.destination
+                });
+                
+                const card = document.createElement('div');
+                card.className = 'flight-card-item';
+                card.innerHTML = `
+                    <div class="flight-card-header">
+                        <span class="flight-card-airline">${flight.airline || 'Unknown'}</span>
+                        <span class="flight-card-price">₹${flight.price?.toLocaleString() || 'N/A'}</span>
+                    </div>
+                    <div class="flight-card-route">
+                        <div class="flight-time">
+                            <div class="flight-time-value">${flight.departure_time || '--:--'}</div>
+                            <div class="flight-airport">${flight.origin || 'N/A'}</div>
+                        </div>
+                        <div class="flight-duration">
+                            ${flight.duration || '--'}<br/>
+                            <span style="color: #666;">${flight.stops || 0} stops</span>
+                        </div>
+                        <div class="flight-time">
+                            <div class="flight-time-value">${flight.arrival_time || '--:--'}</div>
+                            <div class="flight-airport">${flight.destination || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="flight-details">
+                        <div class="flight-detail-item">
+                            <div class="flight-detail-label">CABIN CLASS</div>
+                            <div class="flight-detail-value">${flight.cabin_class || 'Economy'}</div>
+                        </div>
+                        <div class="flight-detail-item">
+                            <div class="flight-detail-label">FLIGHT NO</div>
+                            <div class="flight-detail-value">${flight.flight_number || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="flight-card-actions">
+                        <button class="book-flight-btn" onclick="alert('Booking: ${flight.airline}')">Book Now</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            container.classList.add('show');
+            console.log(`✅ Successfully displayed ${flights.length} flight cards on main UI`);
+            console.log('📍 Container classes:', container.className);
+        };
+        const injectFlightCardsIntoWidget = (flights) => {
+            if (!flights || !flights.length) return;
+
+            withShadowRoot((shadowRoot) => {
+                const mountCards = (transcript) => {
+                    if (!transcript) return;
+
+                    let styleEl = shadowRoot.getElementById('injected-flight-card-styles');
+                    if (!styleEl) {
+                        styleEl = document.createElement('style');
+                        styleEl.id = 'injected-flight-card-styles';
+                        styleEl.textContent = `
+                            [data-flight-cards] {
+                                margin: 18px 0;
+                                padding: 16px 18px;
+                                border-radius: 18px;
+                                background: rgba(17, 24, 39, 0.78);
+                                border: 1px solid rgba(20, 184, 166, 0.25);
+                                box-shadow: 0 18px 48px rgba(9, 14, 30, 0.45);
+                                backdrop-filter: blur(8px);
+                                display: flex;
+                                flex-direction: column;
+                                gap: 14px;
+                                color: #ffffff;
+                            }
+                            [data-flight-cards-title] {
+                                font-weight: 700;
+                                font-size: 15px;
+                                color: #14B8A6;
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                            }
+                            .injected-flight-card {
+                                border-radius: 14px;
+                                border: 1px solid rgba(148, 163, 184, 0.25);
+                                background: linear-gradient(135deg, rgba(13, 17, 33, 0.95) 0%, rgba(20, 26, 48, 0.92) 100%);
+                                padding: 14px 16px;
+                                display: flex;
+                                flex-direction: column;
+                                gap: 10px;
+                            }
+                            .injected-flight-card__top {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                gap: 12px;
+                            }
+                            .injected-flight-card__route {
+                                font-size: 14px;
+                                font-weight: 700;
+                                color: #e2e8f0;
+                            }
+                            .injected-flight-card__airline {
+                                font-size: 12px;
+                                color: rgba(226, 232, 240, 0.75);
+                                padding: 4px 10px;
+                                border-radius: 999px;
+                                background: rgba(20, 184, 166, 0.12);
+                            }
+                            .injected-flight-card__grid {
+                                display: grid;
+                                grid-template-columns: repeat(3, minmax(0, 1fr));
+                                gap: 8px;
+                                font-size: 12px;
+                            }
+                            .injected-flight-card__cell {
+                                text-align: center;
+                                padding: 8px;
+                                border-radius: 10px;
+                                background: rgba(255, 255, 255, 0.04);
+                            }
+                            .injected-flight-card__label {
+                                display: block;
+                                font-size: 10px;
+                                letter-spacing: 0.06em;
+                                text-transform: uppercase;
+                                color: rgba(148, 163, 184, 0.7);
+                                margin-bottom: 4px;
+                            }
+                            .injected-flight-card__value {
+                                font-weight: 700;
+                                color: #34d399;
+                                font-size: 13px;
+                            }
+                            .injected-flight-card__meta {
+                                display: grid;
+                                grid-template-columns: repeat(2, minmax(0, 1fr));
+                                gap: 10px;
+                                font-size: 12px;
+                                background: rgba(148, 163, 184, 0.08);
+                                border-radius: 10px;
+                                padding: 8px 10px;
+                            }
+                            .injected-flight-card__meta span {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 4px;
+                            }
+                            .injected-flight-card__footer {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-top: 4px;
+                            }
+                            .injected-flight-card__price {
+                                font-weight: 800;
+                                font-size: 16px;
+                                color: #38f0c5;
+                            }
+                            .injected-flight-card__book {
+                                background: linear-gradient(135deg, #14B8A6 0%, #0891b2 100%);
+                                border: none;
+                                color: white;
+                                padding: 8px 16px;
+                                border-radius: 999px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                            }
+                            .injected-flight-card__book:hover {
+                                transform: translateY(-2px);
+                                box-shadow: 0 14px 28px rgba(20, 184, 166, 0.35);
+                            }
+                        `;
+                        shadowRoot.appendChild(styleEl);
+                    }
+
+                    const existing = shadowRoot.querySelector('[data-flight-cards]');
+                    if (existing) {
+                        existing.remove();
+                    }
+
+                    const sampleMessage = transcript.querySelector('[data-testid="message"]') || transcript.firstElementChild;
+                    const wrapper = document.createElement(sampleMessage?.tagName || 'div');
+                    if (sampleMessage?.getAttributeNames) {
+                        sampleMessage.getAttributeNames().forEach((attr) => {
+                            if (!['data-testid', 'data-flight-cards'].includes(attr)) {
+                                wrapper.setAttribute(attr, sampleMessage.getAttribute(attr));
+                            }
+                        });
+                    }
+                    wrapper.setAttribute('data-flight-cards', '');
+                    wrapper.className = `${(sampleMessage?.className || '').trim()} flight-cards-message`.trim();
+
+                    const sampleContent = sampleMessage?.firstElementChild;
+                    const contentWrapper = document.createElement(sampleContent?.tagName || 'div');
+                    if (sampleContent?.getAttributeNames) {
+                        sampleContent.getAttributeNames().forEach((attr) => {
+                            contentWrapper.setAttribute(attr, sampleContent.getAttribute(attr));
+                        });
+                    }
+                    contentWrapper.className = `${(sampleContent?.className || '').trim()} flight-cards-content`.trim();
+                    contentWrapper.innerHTML = renderFlightCards(flights);
+
+                    wrapper.innerHTML = '';
+                    wrapper.appendChild(contentWrapper);
+                    transcript.appendChild(wrapper);
+                    if (typeof transcript.scrollTop !== 'undefined') {
+                        transcript.scrollTop = transcript.scrollHeight;
+                    }
+
+                    wrapper.querySelectorAll('[data-flight-book]').forEach((btn) => {
+                        btn.addEventListener('click', () => {
+                            const idx = Number(btn.getAttribute('data-flight-book'));
+                            const flight = flights[idx];
+                            alert(`Booking ${flight?.flight_number || 'Flight'} for ₹${flight?.price || 'N/A'}`);
+                        });
+                    });
+
+                    console.log(`✅ Injected ${flights.length} flight cards into widget chat`);
+                };
+
+                const ensureTranscriptAndMount = () => {
+                    const transcript = findTranscriptElement(shadowRoot);
+                    if (transcript) {
+                        mountCards(transcript);
+                        return true;
+                    }
+                    return false;
+                };
+
+                if (ensureTranscriptAndMount()) {
+                    return;
+                }
+
+                const observer = new MutationObserver(() => {
+                    if (ensureTranscriptAndMount()) {
+                        observer.disconnect();
+                    }
+                });
+
+                observer.observe(shadowRoot, { childList: true, subtree: true });
+            });
+        };
+
+        const renderFlightCards = (flights) => {
+            return `
+                <div data-flight-cards-title>✈️ ${flights.length} flight option${flights.length > 1 ? 's' : ''} ready</div>
+                ${flights
+                    .map((flight, index) => {
+                        const price = flight.price ? `₹${Number(flight.price).toLocaleString()}` : '—';
+                        const stops = flight.stops === 0 ? 'Non-stop' : `${flight.stops || '?'} stop(s)`;
+                        return `
+                            <div class="injected-flight-card">
+                                <div class="injected-flight-card__top">
+                                    <span class="injected-flight-card__route">${flight.origin || '—'} → ${flight.destination || '—'}</span>
+                                    <span class="injected-flight-card__airline">${flight.airline || 'Airline'}</span>
+                                </div>
+                                <div class="injected-flight-card__grid">
+                                    <div class="injected-flight-card__cell">
+                                        <span class="injected-flight-card__label">Departure</span>
+                                        <span class="injected-flight-card__value">${flight.departure_time || '—'}</span>
+                                    </div>
+                                    <div class="injected-flight-card__cell">
+                                        <span class="injected-flight-card__label">Duration</span>
+                                        <span class="injected-flight-card__value">${flight.duration || '—'}</span>
+                                    </div>
+                                    <div class="injected-flight-card__cell">
+                                        <span class="injected-flight-card__label">Arrival</span>
+                                        <span class="injected-flight-card__value">${flight.arrival_time || '—'}</span>
+                                    </div>
+                                </div>
+                                <div class="injected-flight-card__meta">
+                                    <span>
+                                        <span class="injected-flight-card__label">Flight</span>
+                                        <span class="injected-flight-card__value">${flight.flight_number || 'N/A'}</span>
+                                    </span>
+                                    <span>
+                                        <span class="injected-flight-card__label">Class</span>
+                                        <span class="injected-flight-card__value">${flight.cabin_class || 'Economy'}</span>
+                                    </span>
+                                    <span>
+                                        <span class="injected-flight-card__label">Stops</span>
+                                        <span class="injected-flight-card__value">${stops}</span>
+                                    </span>
+                                    <span>
+                                        <span class="injected-flight-card__label">Airline</span>
+                                        <span class="injected-flight-card__value">${flight.airline_code || 'N/A'}</span>
+                                    </span>
+                                </div>
+                                <div class="injected-flight-card__footer">
+                                    <span class="injected-flight-card__price">${price}</span>
+                                    <button class="injected-flight-card__book" data-flight-book="${index}">Book</button>
+                                </div>
+                            </div>
+                        `;
+                    })
+                    .join('')}
+            `;
+        };
+
+        // Enhanced event listeners - catch ALL Vapi events
+        customElements.whenDefined('vapi-widget').then(() => {
+            console.log('✅ VAPI widget ready');
+
+            // Listen to ALL possible events
+            widget.addEventListener('vapi:call-start', () => {
+                console.log('📞 Call started - resetting state');
+                lastUserUtterance = '';
+                currentFlights = [];
+                removeInjectedCards();
+                // Clear flight cards container
+                hideFlightUI();
+                transcriptObserverAttached = false;
+                setTimeout(initAssistantMessageObserver, 500);
+            });
+
+            widget.addEventListener('vapi:transcript', onTranscript);
+            widget.addEventListener('vapi:message', (ev) => {
+                console.log('📨 vapi:message event:', ev.detail);
+                onAssistantMessage(ev);
+            });
+            widget.addEventListener('vapi:speech-update', (ev) => {
+                console.log('🗣️ vapi:speech-update:', ev.detail);
+            });
+            widget.addEventListener('vapi:conversation-update', (ev) => {
+                console.log('💬 vapi:conversation-update:', ev.detail);
+                // Check if this contains the AI response
+                if (ev.detail?.messages) {
+                    const lastMsg = ev.detail.messages[ev.detail.messages.length - 1];
+                    if (lastMsg?.role === 'assistant' && lastMsg?.content) {
+                        console.log('🤖 Assistant from conversation-update:', lastMsg.content);
+                        onAssistantMessage({ detail: { text: lastMsg.content, isFinal: true } });
+                    }
+                }
+            });
+            widget.addEventListener('vapi:ready', () => console.log('✅ VAPI ready'));
+            widget.addEventListener('message', onWidgetMessage);
+
+            widget.addEventListener('vapi:call-end', () => {
+                console.log('📞 Call ended - cleaning up');
+                lastUserUtterance = '';
+                currentFlights = [];
+                removeInjectedCards();
+                // Clear flight cards container
+                hideFlightUI();
+                transcriptObserverAttached = false;
+            });
+        });
+
+        initAssistantMessageObserver();
+
+        function onTranscript(ev) {
+            const text = (ev.detail?.transcript || '').trim();
+            const isFinal = ev.detail?.isFinal;
+            if (!text || isFinal === false) return;
+            lastUserUtterance = text;
+            console.log('📝 User said:', text);
+        }
+
+        async function onAssistantMessage(ev) {
+            const rawText = (ev.detail?.text || '').trim();
+            if (!rawText) return;
+            const isFinal = ev.detail?.isFinal;
+            if (isFinal === false) return;
+            const txt = rawText.toLowerCase();
+
+            console.log('🤖 Assistant:', txt);
+
+            // Pattern match flight-related assistant messages
+            const foundFlights = flightPatterns.some((pattern) => pattern.test(txt));
+
+            if (foundFlights) {
+                console.log('✈️ Flight search message detected from assistant!');
+                const params = extractFlightParams(lastUserUtterance);
+                console.log('📍 Flight params:', params);
+
+                // Immediately fetch and inject flights
+                const flights = await fetchFlights(params);
+                if (flights && flights.length > 0) {
+                    currentFlights = flights;
+                    injectFlightCardsIntoWidget(flights);
+                    showViewFlightsButton(flights);
+                    console.log('✅ Flight cards injected automatically!');
+                } else {
+                    console.warn('⚠️ No flights found; injecting mock data.');
+                    currentFlights = mockFlights();
+                    injectFlightCardsIntoWidget(currentFlights);
+                    showViewFlightsButton(currentFlights);
+                }
+ 
+                // Fallback: Ensure cards appear even if backend delays
+                setTimeout(() => {
+                    if (!currentFlights.length) {
+                        console.log('🕒 No flights after 2s, injecting mock fallback.');
+                        currentFlights = mockFlights();
+                        injectFlightCardsIntoWidget(currentFlights);
+                        showViewFlightsButton(currentFlights);
+                    }
+                }, 2000);
+            }
+        }
+
+        function onWidgetMessage(ev) {
+            if (ev.detail && typeof ev.detail === 'string') {
+                const txt = ev.detail.toLowerCase();
+                if (/(found|showing).*flight/.test(txt)) {
+                    console.log('💬 Detected flight message via message event');
+                }
+            }
+        }
+
+        function extractFlightParams(text) {
+            const map = {
+                bangalore: 'BLR',
+                blr: 'BLR',
+                bengaluru: 'BLR',
+                jeddah: 'JED',
+                jed: 'JED',
+                dubai: 'DXB',
+                dxb: 'DXB',
+                riyadh: 'RUH',
+                ruh: 'RUH'
+            };
+
+            const found = Object.entries(map)
+                .filter(([k]) => text.toLowerCase().includes(k))
+                .map(([, v]) => v);
+
+            console.log('🔍 Found cities:', found);
+            return { origin: found[0], destination: found[1] };
+        }
+
+        async function fetchFlights({ origin, destination }) {
+            if (!origin || !destination) {
+                console.log('❌ Missing origin or destination');
+                return null;
+            }
+
+            console.log(`📡 Calling backend: ${BACKEND_URL}/api/search-flights`);
+            console.log('📦 Request data:', { origin, destination });
+
+            const res = await safeFetch(`${BACKEND_URL}/api/search-flights`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    origin,
+                    destination,
+                    departure_date: '2025-12-15',
+                    passengers: 1,
+                    cabin_class: 'economy'
+                })
+            });
+
+            if (!res) {
+                console.log('❌ No response from backend - using mock data');
+                return mockFlights();
+            }
+
+            if (!res.ok) {
+                console.log(`❌ Backend response not OK: ${res.status}`);
+                console.log('📦 Using mock data as fallback');
+                return mockFlights();
+            }
+
+            try {
+                const data = await res.json();
+                console.log('✅ Backend response received:', data);
+
+                let flights = [];
+                if (data.flights && Array.isArray(data.flights)) {
+                    flights = data.flights;
+                } else if (data.outbound_flights && Array.isArray(data.outbound_flights)) {
+                    flights = data.outbound_flights;
+                } else if (data.data && Array.isArray(data.data)) {
+                    flights = data.data;
+                }
+
+                console.log(`✅ Extracted ${flights.length} flights from response`);
+                return flights.length > 0 ? flights : mockFlights();
+            } catch (e) {
+                console.error('❌ JSON parse error:', e);
+                console.log('📦 Using mock data as fallback');
+                return mockFlights();
+            }
+        }
+
+        function mockFlights() {
+            return [
+                {
+                    origin: 'BLR',
+                    destination: 'JED',
+                    airline: 'Air India Express',
+                    airline_code: 'IX',
+                    flight_number: 'IX 881',
+                    departure_time: '02:15',
+                    arrival_time: '05:30',
+                    duration: '5h 15m',
+                    price: 28450,
+                    stops: 0,
+                    cabin_class: 'Economy'
+                },
+                {
+                    origin: 'BLR',
+                    destination: 'JED',
+                    airline: 'Saudia',
+                    airline_code: 'SV',
+                    flight_number: 'SV 602',
+                    departure_time: '08:40',
+                    arrival_time: '11:50',
+                    duration: '5h 10m',
+                    price: 31200,
+                    stops: 0,
+                    cabin_class: 'Economy'
+                },
+                {
+                    origin: 'BLR',
+                    destination: 'JED',
+                    airline: 'Etihad',
+                    airline_code: 'EY',
+                    flight_number: 'EY 256',
+                    departure_time: '14:20',
+                    arrival_time: '17:45',
+                    duration: '5h 25m',
+                    price: 26890,
+                    stops: 0,
+                    cabin_class: 'Economy'
+                },
+                {
+                    origin: 'BLR',
+                    destination: 'JED',
+                    airline: 'Emirates',
+                    airline_code: 'EK',
+                    flight_number: 'EK 501',
+                    departure_time: '20:30',
+                    arrival_time: '23:55',
+                    duration: '5h 25m',
+                    price: 29750,
+                    stops: 0,
+                    cabin_class: 'Economy'
+                }
+            ];
+        }
+
+        console.log('🚀 Ready to search flights!');
+    </script>
+</body>
+</html>

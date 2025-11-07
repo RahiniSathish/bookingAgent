@@ -1,0 +1,215 @@
+═══════════════════════════════════════════════════════════════════════════════
+🚀 QUICK START - MCP REAL-TIME FLIGHTS (ANY AIRPORT PAIR)
+═══════════════════════════════════════════════════════════════════════════════
+
+✨ NEW FEATURE: Search flights for ANY airport pair, not just BLR→JED!
+
+═══════════════════════════════════════════════════════════════════════════════
+📋 SETUP (2 MINUTES)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. UPDATE .env FILE:
+─────────────────────────────────────────────────────────────────────────────
+nano .env
+
+Add or update:
+BRIGHTDATA_MCP_TOKEN=your_token_here
+
+Save: Ctrl+X → Y → Enter
+
+2. START BACKEND:
+─────────────────────────────────────────────────────────────────────────────
+cd /Users/apple/AI-Travel-agency/AI-Voice-Agent-Travel-/Production/vapi-voicebot
+python -m uvicorn backend.server:app --host 0.0.0.0 --port 4000
+
+You should see:
+✅ INFO:     Application startup complete
+✅ MCPClient initialized with Bright Data API
+
+3. START FRONTEND:
+─────────────────────────────────────────────────────────────────────────────
+# In another terminal:
+cd custom-livekit-widget
+npm run dev
+
+You should see:
+✅ VITE v5.x.x  ready in xxx ms
+✅ Local: http://localhost:3002/
+
+4. OPEN WIDGET:
+─────────────────────────────────────────────────────────────────────────────
+Browser: http://localhost:3002/
+
+═══════════════════════════════════════════════════════════════════════════════
+🎤 VOICE COMMANDS - EXAMPLES
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ "Show flights from Bangalore to Jeddah"
+   → BLR → JED (Real-time or demo data)
+
+✅ "Show flights from Delhi to Dubai"
+   → DEL → DXB
+
+✅ "Show flights from Mumbai to Riyadh"
+   → BOM → RUH
+
+✅ "Show flights from [Any City] to [Any City]"
+   → Works with any supported airports!
+
+═══════════════════════════════════════════════════════════════════════════════
+🧪 QUICK TESTS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. CHECK MCP STATUS:
+───────────────────────────────────────────────────────────────────────────
+curl http://localhost:4000/mcp/status
+
+Expected: mcp_connected = true (if Bright Data token set)
+
+2. TEST ANY ROUTE:
+───────────────────────────────────────────────────────────────────────────
+curl -X POST http://localhost:4000/search-flights \
+  -H "Content-Type: application/json" \
+  -d '{"origin":"BLR","destination":"RUH","departure_date":"2025-12-20"}'
+
+Expected: success = true, flights = [...]
+
+3. TEST IN WIDGET:
+───────────────────────────────────────────────────────────────────────────
+1. Open http://localhost:3002/
+2. Click "📞 Start Call"
+3. Say: "Show flights from Bangalore to Riyadh"
+4. Cards should appear ✅
+
+═══════════════════════════════════════════════════════════════════════════════
+🎯 KEY FEATURES
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ Real-time flights for ANY airport pair
+✅ Automatic Bright Data integration (if token available)
+✅ Fallback to mock database (always works)
+✅ Beautiful flight cards with rich links
+✅ 🗺️ Google Maps links for destinations
+✅ 🏨 Google Hotels links for accommodations
+✅ Voice recognition for city names
+✅ Responsive design (mobile & desktop)
+
+═══════════════════════════════════════════════════════════════════════════════
+🌍 SUPPORTED AIRPORTS
+═══════════════════════════════════════════════════════════════════════════════
+
+India:
+├─ Bangalore (BLR) - "bangalore", "bengaluru", "blr"
+├─ Delhi (DEL) - "delhi", "del"
+└─ Mumbai (BOM) - "mumbai", "bom"
+
+Saudi Arabia & Middle East:
+├─ Jeddah (JED) - "jeddah", "jed"
+├─ Riyadh (RUH) - "riyadh", "ruh"
+└─ Dubai (DXB) - "dubai", "dxb"
+
++ Any other airport in world with Bright Data token!
+
+═══════════════════════════════════════════════════════════════════════════════
+⚙️ API ENDPOINTS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. POST /search-flights
+   → Universal search (recommended)
+   → Params: origin, destination, departure_date, passengers, cabin_class
+
+2. POST /mcp/search-flights
+   → Direct MCP search
+   → Params: origin, destination, departure_date
+
+3. GET /mcp/status
+   → Check MCP connection status
+
+═══════════════════════════════════════════════════════════════════════════════
+🔧 CONFIGURATION FILES
+═══════════════════════════════════════════════════════════════════════════════
+
+MCP Client:
+  File: mcp_client.py
+  ✅ Bright Data API integration
+  ✅ Airport database
+  ✅ Async flight search
+
+Backend:
+  File: backend/server.py
+  ✅ New /search-flights endpoint
+  ✅ New /mcp/search-flights endpoint
+  ✅ New /mcp/status endpoint
+
+Frontend:
+  File: custom-livekit-widget/src/components/TravelAssistant.jsx
+  ✅ Airport extraction from voice
+  ✅ Backend API calls
+  ✅ Flight card display
+
+═══════════════════════════════════════════════════════════════════════════════
+🚨 TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════
+
+PROBLEM: "No flights found"
+─────────────────────────────────────────────────────────────────────────────
+Check:
+1. Airport codes are correct (case-insensitive OK)
+2. Backend is running: curl http://localhost:4000/mcp/status
+3. MCP token is set: echo $BRIGHTDATA_MCP_TOKEN
+4. Bright Data account is active
+
+PROBLEM: "MCP not connected"
+─────────────────────────────────────────────────────────────────────────────
+Check:
+1. .env has BRIGHTDATA_MCP_TOKEN
+2. Restart backend: pkill -f "python server.py"
+3. Verify token: echo $BRIGHTDATA_MCP_TOKEN
+4. Check network connection
+
+PROBLEM: Widget not displaying cards
+─────────────────────────────────────────────────────────────────────────────
+Check:
+1. Frontend is running: http://localhost:3002/
+2. Backend is running: http://localhost:4000/mcp/status
+3. Voice command was correct: "Show flights from X to Y"
+4. Browser console for errors: Open DevTools → Console
+
+═══════════════════════════════════════════════════════════════════════════════
+📊 DATA SOURCES (Priority Order)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Bright Data Real-Time API
+   → Real flight data, live prices
+   → Available if BRIGHTDATA_MCP_TOKEN is set
+   → Supported for ANY airport pair
+
+2. Mock Database (Fallback)
+   → Demo flights for testing
+   → Always available
+   → Pre-configured routes: BLR↔JED, BLR↔RUH, BLR↔DXB, etc.
+
+═══════════════════════════════════════════════════════════════════════════════
+✅ VERIFICATION CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Bright Data token in .env
+□ Backend running on port 4000
+□ Frontend running on port 3002
+□ Can open http://localhost:3002/
+□ Can start voice call
+□ Can say "Show flights from X to Y"
+□ Flight cards appear in chat
+□ Maps link works
+□ Hotels link works
+□ Multiple different routes work
+
+═══════════════════════════════════════════════════════════════════════════════
+🎉 YOU'RE READY!
+═══════════════════════════════════════════════════════════════════════════════
+
+Say: "Show flights from [any city] to [any city]" 🎤✈️
+
+Real-time flight data will appear as beautiful cards with maps and hotel links!
+
+═══════════════════════════════════════════════════════════════════════════════

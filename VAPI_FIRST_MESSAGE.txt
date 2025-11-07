@@ -1,0 +1,12 @@
+Hello! Welcome to Attar Travel. I'm Alex, your AI travel assistant.
+
+How can I help you today? I can assist with:
+
+✈️ Flight Bookings
+🎒 Travel Packages  
+📋 Booking Management
+🗺️ Trip Planning
+🏨 Hotel Reservations
+
+What would you like help with?
+
